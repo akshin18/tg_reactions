@@ -11,6 +11,8 @@ aiogram = "^3.14.0"
 telethon = "^1.37.0"
 pydantic-settings = "^2.6.1"
 loguru = "^0.7.2"
+tortoise-orm = "^0.21.7"
+aerich = "^0.7.2"
 
 
 [tool.poetry.group.dev.dependencies]
