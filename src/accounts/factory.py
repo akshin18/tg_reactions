@@ -1,18 +1,38 @@
+import asyncio
 from typing import Optional
 
 import telethon
+from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 
 from src.config import settings
+from src.errors import NotAuthorizedAccountError
 
 
 class Account:
-    def __init__(self, phone: str, session_string: Optional[str] = None):
+    def __init__(self, phone: str):
         self.phone = phone
         self.phone_code_hash = None
-        self.client = None
+        self.client: Optional[TelegramClient] = None
         self.session_string = None
+
+    async def initialize(self, session_string: str):
+        try:
+            await self._auth_process(session_string)
+        except telethon.errors.rpcerrorlist.PhoneNumberInvalidError as e:
+            logger.error(e)
+            raise e
+
+    async def _auth_process(self, session_string: str):
+        await self.create_client(StringSession(session_string))
+        is_connected = self.client.is_connected()
+        is_authorized = await self.client.is_user_authorized()
+        logger.info(f"{is_connected=} {is_authorized=}")
+        if not is_authorized:
+            raise NotAuthorizedAccountError()
+        me = await self.client.get_me()
+        logger.info(f"Account {self.phone} authorized {me}")
 
     async def create_client(self, session: Optional[StringSession] = None) -> None:
         if session is None:
@@ -20,6 +40,7 @@ class Account:
         self.client = TelegramClient(session, settings.API_ID, settings.API_HASH)
         await self.client.connect()
         self.session_string = await self._get_session_string()
+        logger.info(f"Client {self.phone} created {self.session_string=}")
 
     async def _get_session_string(self) -> str:
         return self.client.session.save()
@@ -36,16 +57,17 @@ class Account:
         password: Optional[str] = None,
     ) -> bool:
         try:
-            result = await self.client.sign_in(
+            await self.client.sign_in(
                 phone=self.phone,
                 code=code,
                 password=password,
                 phone_code_hash=self.phone_code_hash,
             )
-            print(result)
+            self.session_string = await self._get_session_string()
+            logger.info(f"New session string: {self.session_string}")
             return True
         except telethon.errors.rpcerrorlist.PhoneCodeExpiredError as e:
-            print("Phone code expired", e)
+            logger.error(e)
             return False
 
     def close(self):
@@ -71,3 +93,21 @@ class CreateAccounts:
     @classmethod
     def get_account(cls, phone: str):
         return cls.accounts.get(phone)
+
+
+class Workers:
+    workers = {}
+
+    @classmethod
+    def add_worker(cls, phone: str) -> Account:
+        account = Account(phone)
+        cls.workers[phone] = account
+        return account
+
+    @classmethod
+    def remove_worker(cls, phone: str):
+        cls.workers.pop(phone, None)
+
+    @classmethod
+    def get_worker(cls, phone: str):
+        return cls.workers.get(phone)

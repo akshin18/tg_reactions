@@ -10,15 +10,14 @@ async def get_accounts() -> str:
     output = "\n".join(
         [
             "Statistic:\n",
-            f"{'phone':_<{column_width}}{'pwd':_^{column_width}}{'is_working':_^{column_width}}{'reacted':_^{column_width}}\n\n",
+            f"{'phone':_<{column_width}}{'is_working':_^{column_width}}{'reacted':_^{column_width}}\n\n",
         ]
         + [
-            f"{account.phone:_<{column_width}}{account.pwd:_^{column_width}}{account.is_working:_^{column_width}}{account.reacted:_^{column_width}}"
+            f"{account.phone:_<{column_width}}{account.is_working:_^{column_width}}{account.reacted:_^{column_width}}"
             for account in accounts
         ]
     )
 
-    print(output)
     return output
 
 

@@ -4,6 +4,7 @@ import logging
 from loguru import logger
 from tortoise import Tortoise
 
+from src.accounts.task import main_loop
 from src.app import bot, dp
 from src.config import settings
 from src.handlers.admin import router as admin_router
@@ -11,6 +12,7 @@ from src.handlers.admin import router as admin_router
 
 async def on_startup() -> None:
     await init_db()
+    asyncio.create_task(main_loop())
     logger.info("Bot started!")
 
 
