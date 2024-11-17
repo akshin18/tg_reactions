@@ -28,7 +28,10 @@ async def add_account_handler(message: Message, state: FSMContext) -> None:
 @router.message(CreateAccount.phone)
 async def _(message: Message, state: FSMContext) -> None:
     data = await state.get_data() or {}
-    phone = message.text.replace(" ", "")
+    phone = message.text.replace(" ", "") if message.text else None
+    if not phone:
+        await message.answer("Номер телефона не введен")
+        return
     data["phone"] = phone
     await register_account(phone)
     await state.set_data(data)
@@ -39,7 +42,11 @@ async def _(message: Message, state: FSMContext) -> None:
 @router.message(CreateAccount.code)
 async def _(message: Message, state: FSMContext) -> None:
     data = await state.get_data() or {}
-    data["code"] = message.text.strip()
+    code = message.text.strip() if message.text else None
+    if not code:
+        await message.answer("Код не введен")
+        return
+    data["code"] = code
     await state.set_data(data)
     await state.set_state(CreateAccount.pwd)
     await message.answer("Пароль: (если нет, то введите -)")
@@ -50,8 +57,18 @@ async def _(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
 
     phone = data.get("phone")
+    if not phone:
+        await state.clear()
+        await message.answer("Ошибка, Номер телефона не найден, попробуйте еще раз")
+        return
     code = data.get("code")
-    password = message.text.strip() if message.text.strip() != "-" else None
+    if not code:
+        await state.clear()
+        await message.answer("Ошибка, Код не найден, попробуйте еще раз")
+        return
+    password = (
+        message.text.strip() if message.text and message.text.strip() != "-" else None
+    )
     session_string = await sign_in(phone, code, password)
     if not session_string:
         await state.clear()

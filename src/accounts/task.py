@@ -1,7 +1,6 @@
 import asyncio
 import random
 
-import telethon.errors.rpcerrorlist
 from aiogram.client.session.middlewares.request_logging import logger
 from telethon import TelegramClient, functions, types
 from telethon.events import NewMessage
@@ -10,7 +9,7 @@ from src.accounts.factory import Workers
 from src.db.models import Accounts, Channels
 
 
-async def message_handler(event: NewMessage.Event):
+async def message_handler(event: NewMessage.Event) -> None:
     client: TelegramClient = event.client
     await asyncio.sleep(random.randint(5, 10))
     await client(
@@ -29,7 +28,7 @@ async def message_handler(event: NewMessage.Event):
     logger.info("Reacted")
 
 
-async def main_loop():
+async def main_loop() -> None:
     while True:
         logger.info("start")
         accounts = await Accounts.filter(is_working=True)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from src.db.models import Accounts
 
 
@@ -21,5 +23,5 @@ async def get_accounts() -> str:
     return output
 
 
-async def add_account(phone: str, pwd: str, session_string: str) -> None:
+async def add_account(phone: str, pwd: Optional[str], session_string: str) -> None:
     await Accounts.create(phone=phone, pwd=pwd, session_string=session_string)

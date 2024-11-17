@@ -1,9 +1,8 @@
-import asyncio
-from typing import Optional
+from typing import Dict, Optional
 
-import telethon
 from loguru import logger
 from telethon import TelegramClient
+from telethon.errors.rpcerrorlist import PhoneCodeExpiredError, PhoneNumberInvalidError
 from telethon.sessions import StringSession
 
 from src.config import settings
@@ -13,14 +12,14 @@ from src.errors import NotAuthorizedAccountError
 class Account:
     def __init__(self, phone: str):
         self.phone = phone
-        self.phone_code_hash = None
-        self.client: Optional[TelegramClient] = None
-        self.session_string = None
+        self.phone_code_hash: str
+        self.client: TelegramClient
+        self.session_string: str
 
     async def initialize(self, session_string: str):
         try:
             await self._auth_process(session_string)
-        except telethon.errors.rpcerrorlist.PhoneNumberInvalidError as e:
+        except PhoneNumberInvalidError as e:
             logger.error(e)
             raise e
 
@@ -66,11 +65,11 @@ class Account:
             self.session_string = await self._get_session_string()
             logger.info(f"New session string: {self.session_string}")
             return True
-        except telethon.errors.rpcerrorlist.PhoneCodeExpiredError as e:
+        except PhoneCodeExpiredError as e:
             logger.error(e)
             return False
 
-    def close(self):
+    def close(self) -> None:
         self.client.disconnect()
 
     def __str__(self):
@@ -78,7 +77,7 @@ class Account:
 
 
 class CreateAccounts:
-    accounts = {}
+    accounts: Dict[str, Account] = {}
 
     @classmethod
     def add_account(cls, phone: str) -> Account:
@@ -96,7 +95,7 @@ class CreateAccounts:
 
 
 class Workers:
-    workers = {}
+    workers: Dict[str, Account] = {}
 
     @classmethod
     def add_worker(cls, phone: str) -> Account:

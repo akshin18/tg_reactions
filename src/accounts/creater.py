@@ -1,8 +1,5 @@
 from typing import Optional
 
-from telethon import functions, types
-from telethon.events import NewMessage
-
 from src.accounts.factory import Account, CreateAccounts
 from src.errors import NoClientError
 
@@ -23,9 +20,9 @@ async def remove_account(phone: str) -> None:
     CreateAccounts.remove_account(phone)
 
 
-async def sign_in(phone: str, code: str, password: str) -> Optional[str]:
+async def sign_in(phone: str, code: str, password: Optional[str]) -> Optional[str]:
     account = await get_account(phone)
     result = await account.sign_in(code, password)
     if not result:
-        return
+        return None
     return account.session_string
