@@ -22,7 +22,7 @@ async def on_shutdown() -> None:
 async def init_db() -> None:
     await Tortoise.init(
         db_url=settings.DB_URL,
-        modules={"models": ["db.models"]},
+        modules={"models": ["src.db.models"]},
         timezone="Europe/Moscow",
     )
     await Tortoise.generate_schemas()
