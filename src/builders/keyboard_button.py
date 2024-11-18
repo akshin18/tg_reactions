@@ -7,15 +7,15 @@ def get_admin_menu() -> ReplyKeyboardMarkup:
             [
                 KeyboardButton(text="Get Accounts"),
                 KeyboardButton(text="Add Account"),
-                KeyboardButton(text="Delete accounts"),
+                KeyboardButton(text="Delete account"),
             ],
             [
                 KeyboardButton(text="Get Channels"),
                 KeyboardButton(text="Add Channel"),
-                KeyboardButton(text="Delete accounts"),
+                KeyboardButton(text="Delete Channel"),
             ],
             [
-                KeyboardButton(text="Statistic"),
+                KeyboardButton(text="Cancel"),
             ],
         ],
         resize_keyboard=True,
