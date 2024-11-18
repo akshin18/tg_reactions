@@ -12,7 +12,7 @@ from src.handlers.admin import router as admin_router
 
 async def on_startup() -> None:
     await init_db()
-    # asyncio.create_task(main_loop())
+    asyncio.create_task(main_loop())
     logger.info("Bot started!")
 
 
