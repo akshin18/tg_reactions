@@ -1,3 +1,7 @@
 services:
     bot:
         build: .
+        volumes:
+            - ./:/app
+        environment:
+            - DOCKER_BUILDKIT=1
