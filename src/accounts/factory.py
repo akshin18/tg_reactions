@@ -2,7 +2,11 @@ from typing import Dict, Optional
 
 from loguru import logger
 from telethon import TelegramClient
-from telethon.errors.rpcerrorlist import PhoneCodeExpiredError, PhoneNumberInvalidError
+from telethon.errors.rpcerrorlist import (
+    PhoneCodeExpiredError,
+    PhoneNumberInvalidError,
+    SessionPasswordNeededError,
+)
 from telethon.sessions import StringSession
 
 from src.config import settings
@@ -13,7 +17,7 @@ class Account:
     def __init__(self, phone: str):
         self.phone = phone
         self.phone_code_hash: str
-        self.client: TelegramClient
+        self.client: TelegramClient = None
         self.session_string: str
 
     async def initialize(self, session_string: str):
@@ -56,6 +60,7 @@ class Account:
         password: Optional[str] = None,
     ) -> bool:
         try:
+            logger.info(f"Sign in {code} {password}")
             await self.client.sign_in(
                 phone=self.phone,
                 code=code,
@@ -66,6 +71,9 @@ class Account:
             logger.info(f"New session string: {self.session_string}")
             return True
         except PhoneCodeExpiredError as e:
+            logger.error(e)
+            return False
+        except SessionPasswordNeededError as e:
             logger.error(e)
             return False
 
