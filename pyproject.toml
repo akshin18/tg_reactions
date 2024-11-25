@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "tg-reactions"
+version = "0.1.0"
+description = ""
+authors = ["akshin-autods <agshin@autods.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.14.0"
+telethon = "^1.37.0"
+pydantic-settings = "^2.6.1"
+loguru = "^0.7.2"
+tortoise-orm = "^0.21.7"
+aerich = "^0.7.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint]
+select = [
+    "PL",  #Pylint
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+]
+ignore = ["F401"]
