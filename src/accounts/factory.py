@@ -25,7 +25,6 @@ class Account:
             await self._auth_process(session_string)
         except PhoneNumberInvalidError as e:
             logger.error(e)
-            raise e
 
     async def _auth_process(self, session_string: str):
         await self.create_client(StringSession(session_string))
