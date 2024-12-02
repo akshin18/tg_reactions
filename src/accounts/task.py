@@ -12,20 +12,22 @@ from src.db.models import Accounts, Channels
 async def message_handler(event: NewMessage.Event) -> None:
     client: TelegramClient = event.client
     await asyncio.sleep(random.randint(5, 10))
-    await client(
-        functions.messages.SendReactionRequest(
-            peer=event.message.peer_id,
-            msg_id=event.message.id,
-            big=True,
-            add_to_recent=True,
-            reaction=[
-                types.ReactionEmoji(
-                    emoticon=random.choice(["👍", "❤️", "🔥", "👏", "😁"])
-                )
-            ],
+    emoji = random.choice(["👍", "❤️", "🔥", "👏", "😁"])
+    try:
+        await client(
+            functions.messages.SendReactionRequest(
+                peer=event.message.peer_id,
+                msg_id=event.message.id,
+                big=True,
+                add_to_recent=True,
+                reaction=[types.ReactionEmoji(emoticon=emoji)],
+            )
         )
-    )
-    logger.info("Reacted")
+    except Exception as e:
+        logger.error(e)
+        logger.error(f"error emoji is {emoji}")
+    finally:
+        logger.info("Reacted")
 
 
 async def main_loop() -> None:
