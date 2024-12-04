@@ -27,7 +27,7 @@ async def message_handler(event: NewMessage.Event) -> None:
         logger.error(e)
         logger.error(f"error emoji is {emoji}")
     finally:
-        logger.info("Reacted")
+        logger.info(f"Reacted {event.chat_id}")
 
 
 async def main_loop() -> None:
