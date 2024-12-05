@@ -15,7 +15,7 @@ async def message_handler(event: NewMessage.Event) -> None:
     emoji = random.choice(["👍", "❤️", "🔥", "👏"])
     result = await client(functions.messages.GetAvailableReactionsRequest(hash=0))
     for reaction in result.reactions:
-        print(reaction.reaction)
+        logger.info(reaction.reaction)
     try:
         await client(
             functions.messages.SendReactionRequest(
