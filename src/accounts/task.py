@@ -18,8 +18,6 @@ async def message_handler(event: NewMessage.Event) -> None:
             functions.messages.SendReactionRequest(
                 peer=event.message.peer_id,
                 msg_id=event.message.id,
-                big=True,
-                add_to_recent=True,
                 reaction=[types.ReactionEmoji(emoticon=emoji)],
             )
         )
