@@ -11,7 +11,7 @@ from src.db.models import Accounts, Channels
 
 async def message_handler(event: NewMessage.Event) -> None:
     client: TelegramClient = event.client
-    await asyncio.sleep(random.randint(5, 10))
+    await asyncio.sleep(random.randint(60 * 5, 60 * 50 * 2))
     emoji = random.choice(["👍", "❤️", "🔥", "👏"])
     result = await client(functions.messages.GetAvailableReactionsRequest(hash=0))
     for reaction in result.reactions:
