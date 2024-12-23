@@ -12,6 +12,21 @@ from src.db.models import Accounts, Channels
 async def message_handler(event: NewMessage.Event) -> None:
     client: TelegramClient = event.client
     await asyncio.sleep(random.randint(60 * 5, 60 * 50 * 2))
+
+
+    # Simulate viewing the message
+    try:
+        logger.info(f"Marking message {event.message.id} as viewed in chat {event.chat_id}")
+        await client(
+            functions.messages.ReadHistoryRequest(
+                peer=event.message.peer_id,
+                max_id=event.message.id  # Mark messages up to this ID as read
+            )
+        )
+    except Exception as e:
+        logger.error(f"Failed to mark message {event.message.id} as viewed: {e}")
+
+
     emoji = random.choice(["👍", "❤️", "🔥", "👏"])
     result = await client(functions.messages.GetAvailableReactionsRequest(hash=0))
     for reaction in result.reactions:
