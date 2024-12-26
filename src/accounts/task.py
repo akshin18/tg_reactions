@@ -23,9 +23,9 @@ async def message_handler(event: NewMessage.Event) -> None:
         logger.error(f"Failed to mark message {event.message.id} as viewed: {e}")
 
     emoji = random.choice(["👍", "❤️", "🔥", "👏"])
-    result = await client(functions.messages.GetAvailableReactionsRequest(hash=0))
-    for reaction in result.reactions:
-        logger.info(reaction.reaction)
+    # result = await client(functions.messages.GetAvailableReactionsRequest(hash=0))
+    # for reaction in result.reactions:
+    #     logger.info(reaction.reaction)
     try:
         await client(
             functions.messages.SendReactionRequest(
