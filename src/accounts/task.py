@@ -2,7 +2,7 @@ import asyncio
 import random
 
 from aiogram.client.session.middlewares.request_logging import logger
-from telethon import TelegramClient, functions, types
+from telethon import TelegramClient, functions, types, utils
 from telethon.events import NewMessage
 
 from src.accounts.factory import Workers
@@ -13,19 +13,14 @@ async def message_handler(event: NewMessage.Event) -> None:
     client: TelegramClient = event.client
     await asyncio.sleep(random.randint(60 * 5, 60 * 50 * 2))
 
-
     # Simulate viewing the message
     try:
-        logger.info(f"Marking message {event.message.id} as viewed in chat {event.chat_id}")
+        peer = utils.get_input_peer(event.message.peer_id, client)
         await client(
-            functions.messages.ReadHistoryRequest(
-                peer=event.message.peer_id,
-                max_id=event.message.id  # Mark messages up to this ID as read
-            )
+            functions.messages.ReadHistoryRequest(peer=peer, max_id=event.message.id)
         )
     except Exception as e:
         logger.error(f"Failed to mark message {event.message.id} as viewed: {e}")
-
 
     emoji = random.choice(["👍", "❤️", "🔥", "👏"])
     result = await client(functions.messages.GetAvailableReactionsRequest(hash=0))
