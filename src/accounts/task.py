@@ -15,10 +15,15 @@ async def message_handler(event: NewMessage.Event) -> None:
 
     # Simulate viewing the message
     try:
-        peer = utils.get_input_peer(event.message.peer_id, client)
-        await client(
-            functions.messages.ReadHistoryRequest(peer=peer, max_id=event.message.id)
-        )
+        peer = event.message.to_id
+        if peer:
+            await client(
+                functions.messages.ReadHistoryRequest(
+                    peer=peer, max_id=event.message.id
+                )
+            )
+        else:
+            logger.error("Unable to resolve peer for marking as viewed.")
     except Exception as e:
         logger.error(f"Failed to mark message {event.message.id} as viewed: {e}")
 
