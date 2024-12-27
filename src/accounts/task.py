@@ -15,15 +15,26 @@ async def message_handler(event: NewMessage.Event) -> None:
 
     # Simulate viewing the message
     try:
-        peer = event.message.to_id
-        if peer:
-            await client(
-                functions.messages.ReadHistoryRequest(
-                    peer=peer, max_id=event.message.id
-                )
-            )
+        # Fetch the full entity for the peer
+        entity = await client.get_entity(event.message.to_id)
+
+        # Convert the entity to an InputPeer
+        if isinstance(entity, types.User):
+            peer = types.InputPeerUser(entity.id, entity.access_hash)
+        elif isinstance(entity, types.Chat):
+            peer = types.InputPeerChat(entity.id)
+        elif isinstance(entity, types.Channel):
+            peer = types.InputPeerChannel(entity.id, entity.access_hash)
         else:
-            logger.error("Unable to resolve peer for marking as viewed.")
+            logger.error(f"Unsupported entity type: {type(entity)}")
+            return
+
+        # Mark the message as read
+        await client(
+            functions.messages.ReadHistoryRequest(peer=peer, max_id=event.message.id)
+        )
+        logger.info(f"Message {event.message.id} marked as viewed.")
+
     except Exception as e:
         logger.error(f"Failed to mark message {event.message.id} as viewed: {e}")
 
